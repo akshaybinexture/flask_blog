@@ -64,6 +64,8 @@ def google_authorize():
         user = User(username=username, email=email, password="default123")
         db.session.add(user)
         db.session.commit()
+        # user2 = User.query.filter_by(email=email).first()
+        login_user(user)
     else:
         login_user(user1)
     print(f"\n{resp}\n{username}\n{email}")
