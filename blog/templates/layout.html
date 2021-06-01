@@ -30,6 +30,12 @@
               <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
               <a class="nav-item nav-link" href="{{ url_for('main.about') }}">About</a>
             </div>
+
+          <form class="form-inline mr-3" method="get">
+              <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search" required>
+              <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+
               <!-- Navbar Right Side -->
             <div class="navbar-nav">
                 {% if current_user.is_authenticated %}

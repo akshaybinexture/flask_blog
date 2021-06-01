@@ -5,7 +5,7 @@ from blog.models import User, Post
 from blog.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                    RequestResetForm, ResetPasswordForm)
 from blog.users.utils import save_picture, send_reset_email
-
+from blog import oauth
 users = Blueprint('users', __name__)
 
 
@@ -38,6 +38,54 @@ def login():
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
+
+
+# Google login route here
+@users.route('/login/google')
+def google_login():
+    google = oauth.create_client('google')
+    redirect_uri = url_for('users.google_authorize', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+
+# Google authorize route here
+@users.route('/login/google/authorize')
+def google_authorize():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    google = oauth.create_client('google')
+    token = google.authorize_access_token()
+    resp = google.get('userinfo').json()
+    username = resp['name']
+    email = resp['email']
+    user1 = User.query.filter_by(email=email).first()
+    if not user1:
+        user = User(username=username, email=email, password="default123")
+        db.session.add(user)
+        db.session.commit()
+    else:
+        login_user(user1)
+    print(f"\n{resp}\n{username}\n{email}")
+    next_page = request.args.get('next')
+    return redirect(next_page) if next_page else redirect(url_for('main.home'))
+
+# Github login route
+@users.route('/login/github')
+def github_login():
+    github = oauth.create_client('github')
+    redirect_uri = url_for('users.github_authorize', _external=True)
+    return github.authorize_redirect(redirect_uri)
+
+
+# Github authorize route
+@users.route('/login/github/authorize')
+def github_authorize():
+    github = oauth.create_client('github')
+    token = github.authorize_access_token()
+    resp = github.get('user').json()
+    print(f"\n{resp}\n")
+    return "You are successfully signed in using github"
+
 
 
 @users.route("/logout")

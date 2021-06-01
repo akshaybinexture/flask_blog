@@ -5,6 +5,7 @@
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Log In</legend>
+
                 <div class="form-group">
                     {{ form.email.label(class="form-control-label") }}
                     {% if form.email.errors %}
@@ -35,9 +36,14 @@
                     {{ form.remember(class="form-check-input") }}
                     {{ form.remember.label(class="form-check-label") }}
                 </div>
+
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
+                <a class="btn btn-outline-dark" href="{{  url_for('users.google_login') }}" role="button" style="text-transform:none">
+                    <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                    Login with Google
+                </a>
                 <small class="text-muted ml-2">
                     <a href="{{ url_for('users.reset_request') }}">Forgot Password?</a>
                 </small>
