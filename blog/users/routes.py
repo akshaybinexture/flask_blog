@@ -57,14 +57,18 @@ def google_authorize():
     google = oauth.create_client('google')
     token = google.authorize_access_token()
     resp = google.get('userinfo').json()
+    print(resp)
     username = resp['name']
     email = resp['email']
     user1 = User.query.filter_by(email=email).first()
     if not user1:
-        user = User(username=username, email=email, password="default123")
+        username = resp['email'].split('@')[0]
+        print(username)
+        user = User(username=username, email=email, password="password123")
         db.session.add(user)
         db.session.commit()
         # user2 = User.query.filter_by(email=email).first()
+        # login_user(user2)
         login_user(user)
     else:
         login_user(user1)
@@ -73,21 +77,21 @@ def google_authorize():
     return redirect(next_page) if next_page else redirect(url_for('main.home'))
 
 # Github login route
-@users.route('/login/github')
-def github_login():
-    github = oauth.create_client('github')
-    redirect_uri = url_for('users.github_authorize', _external=True)
-    return github.authorize_redirect(redirect_uri)
-
-
-# Github authorize route
-@users.route('/login/github/authorize')
-def github_authorize():
-    github = oauth.create_client('github')
-    token = github.authorize_access_token()
-    resp = github.get('user').json()
-    print(f"\n{resp}\n")
-    return "You are successfully signed in using github"
+# @users.route('/login/github')
+# def github_login():
+#     github = oauth.create_client('github')
+#     redirect_uri = url_for('users.github_authorize', _external=True)
+#     return github.authorize_redirect(redirect_uri)
+#
+#
+# # Github authorize route
+# @users.route('/login/github/authorize')
+# def github_authorize():
+#     github = oauth.create_client('github')
+#     token = github.authorize_access_token()
+#     resp = github.get('user').json()
+#     print(f"\n{resp}\n")
+#     return "You are successfully signed in using github"
 
 
 
